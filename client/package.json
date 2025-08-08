@@ -1,0 +1,12 @@
+{
+  "name": "client-amazon-scrapper",
+  "version": "1.0.0",
+  "description": "Frontend for the web-amazon-scrapper full stack project",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "vite": "^7.1.1"
+  }
+}

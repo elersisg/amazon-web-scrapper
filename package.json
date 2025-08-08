@@ -1,0 +1,11 @@
+{
+  "name": "simple-amazon-scrapper",
+  "version": "1.0.0",
+  "description": "Simple amazon web scrapper for learning",
+  "scripts": {
+    "dev": "concurrently \"bun run server\" and \"bun run client\" ",
+    "server": "cd server && bun run dev",
+    "client": "cd client && bun run dev "
+  }
+
+}

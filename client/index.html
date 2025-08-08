@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon web scrapper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+
+        <!--Section for the header-->
+        <h1> Amazon products scrapper</h1>
+        <p> Enter a keyword to search the product</p>
+    </div>
+
+    <div class="search-box">
+        <!--Section for searching-->
+        <input type="text" id="searchInput" placeholder="Enter a product name">
+        <button id="searchButton">Search products</button>
+    </div>
+    
+    <!--Loading message-->
+    <div id="loading" class="loading hidden">
+        <p> Loading results</p>
+    </div>
+
+    <!--Error handler-->
+    <div id="error" class="error hidden"> 
+        <p id="errorMessage"></p>
+    </div>
+
+    <!--Results section-->
+    <div id="results" class="results hidden"> 
+        <h2 id="resultsTitle"></h2>
+        <div id="productsList" class="products-list">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+
+</body>
+</html>
