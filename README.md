@@ -56,7 +56,7 @@ bun run dev
 
 Since I'm on arch linux you probably wont see these if you run it on windows, but if you help yourself out with these points and how to fix them
 
-# HTTP VS HTTPS
+## HTTP VS HTTPS
 
 By default the backend runs on http, this so amazon doesn't block requests due to security reasons. Also if your browser forces HTTPS by pasting the localhost url on the search bar just manually type the url with HTTP
 
