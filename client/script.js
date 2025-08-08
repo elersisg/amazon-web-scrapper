@@ -9,7 +9,7 @@ const resultsTitle = document.getElementById('resultsTitle');
 const productsList = document.getElementById('productsList');
 
 // Backend server URL
-const API_URL = 'http://localhost:3001';
+const API_URL = 'http://localhost:8080';
 
 // Function to hide all message sections
 function hideAllMessages() {
