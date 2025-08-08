@@ -9,7 +9,7 @@ This README includes fixes for common issues that I documented on the process of
 
 ## Prerequisites
 
--Bun (latest)
+-Bun (latest)<br>
 -Any browser
 
  ## Project setup to run locally 
