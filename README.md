@@ -7,3 +7,4 @@ A minimal Amazon scraper for learning:
 
 This README includes fixes for common issues that I documented on the process of testing the finnal product. 
 
+<hr>
