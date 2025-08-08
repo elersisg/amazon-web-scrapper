@@ -54,7 +54,7 @@ bun run dev
 
 # KNOWN ISSUES
 
-Since I'm on arch linux you probably wont see these if you run it on windows, but if you help yourself out with these points and how to fix them
+Since I'm on arch linux you probably wont see these if you run it on windows, but if you do help yourself out with these issues and how to fix them
 
 ## HTTP VS HTTPS
 
