@@ -42,79 +42,93 @@ app.get('/api/scrape', async (req, res) => {
 
     //Fetch the  amazon search results page
     const response = await axios.get(url, {
-        headers: {
-        // Pretend to be a real browser
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-        }
-    });
+  headers: {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+    'Upgrade-Insecure-Requests': '1',
+    'Connection': 'keep-alive'
+     },
+    timeout: 15000
+    }); 
 
     //Parse the HTML 
+    // Parse HTML
     const dom = new JSDOM(response.data);
     const document = dom.window.document;
 
-    //Find all the product containers 
-    const products = document.querySelectorAll('[data-component-type="s-search-result"]');
+    //Takes only results with real ASIN (avoids placeholders/ads)
+    const productNodes = Array.from(
+    document.querySelectorAll('[data-component-type="s-search-result"]')
+    ).filter(el => (el.getAttribute('data-asin') || '').trim().length > 0);
 
-    console.log(`Found ${products.length} products`);
+    console.log(`Found ${productNodes.length} products (filtered with data-asin)`);
 
-    //Array to store all the results
     const results = [];
 
-    //Looping through each products, maximum 10
-    for (let i = 0; i < Math.min (products.length, 10); i++) {
+    // 2) Extract info with the tolerant selectores
+    for (const product of productNodes) {
+  // TITLE (prioritizes aria-label from </a>)
+  const aEl = product.querySelector('h2 a');
+  let title =
+    aEl?.getAttribute('aria-label')?.trim() ||
+    product.querySelector('h2 a span')?.textContent?.trim() ||
+    product.querySelector('h2')?.textContent?.trim() ||
+    '';
 
-        const product = products[i];
+  // --- RATING ---
+  let rating = 'No rating';
+  const ratingRaw =
+    product.querySelector('.a-icon-alt')?.getAttribute('aria-label') ||
+    product.querySelector('.a-icon-alt')?.textContent ||
+    '';
+  const ratingMatch = ratingRaw.match(/([\d.]+)\s*out of\s*5/i);
+  if (ratingMatch) rating = `${ratingMatch[1]} out of 5 stars`;
 
-        //Extract the product title
-        const titleElement = product.querySelector('h2 a span');
-        const title = titleElement ? titleElement.textContent.trim() : 'No title found';
-
-        //Extract the rating 
-
-        let rating = 'No current ratings';
-        const ratingElement = product.querySelector('.a-icon-alt');
-        if (ratingElement) {
-            const ratingText = ratingElement.getAttribute('aria-label');
-            if (ratingText && ratingText.includes('out of 5')) {
-                rating = ratingText
-            }
-        }
-
-
-        //Extract the number of reviews 
-        let reviews = 'No reviews';
-        const reviewElements = product.querySelectorAll('span');
-        for (let reviewElement of reviewElements) {
-            const text = reviewElement.textContent.trim();
-            //Here we look for numbers with commas 
-            if (text.match(/^\d{1,3}(,\d{3})*$/)) {
-          reviews = text + ' reviews';
-          break;
-        }
-    
-        }
-
-        //logic for extracting the immage URL 
-        let imageUrl = 'No image';
-        const imageElement = product.querySelector('img');
-        if (imageElement && imageElement.src) {
-            imageUrl = imageElement.src
-        }
-
-
-        //Only add products that have a real title
-        if (title !== 'No title found') {
-            results.push({
-                title:title,
-                rating: rating,
-                reviews: reviews,
-                image: imageUrl
-
-            })
-        }
+  // REVIEWS
+  let reviews = 'No reviews';
+  const reviewsNode =
+    product.querySelector('span[aria-label$="ratings"]') ||
+    product.querySelector('span[aria-label$="reviews"]') ||
+    product.querySelector('.a-size-base.s-underline-text') ||
+    product.querySelector('.s-link-style .s-underline-link-text');
+  if (reviewsNode) {
+    const txt = reviewsNode.textContent.trim();
+    const n = (txt.match(/\d[\d,]*/) || [null])[0];
+    if (n) reviews = `${n} reviews`;
+  } else {
+    // Fallback: scan spans con número en formato 1,234
+    for (const el of product.querySelectorAll('span')) {
+      const t = el.textContent?.trim() || '';
+      if (/^\d{1,3}(,\d{3})*$/.test(t)) {
+        reviews = `${t} reviews`;
+        break;
+      }
     }
+  }
 
-    //Send results bacj to the frontend
+  // --- IMAGE ---
+  let image = 'No image';
+  const imgEl =
+    product.querySelector('img.s-image') ||
+    product.querySelector('img[data-image-latency]') ||
+    product.querySelector('img');
+  image = imgEl?.getAttribute('src') || imgEl?.getAttribute('data-src') || 'No image';
+
+  // Pushes only if theres a title 
+  if (title && title.length > 0) {
+    results.push({ title, rating, reviews, image });
+  }
+}
+
+    // 3) Error handling log
+    console.log('Returning results:', results.length);
+    if (results[0]) console.log('First result sample:', results[0]);
+
+
+    //Send results back to the frontend
     res.json({
         success: true,
         keyword: keyword,
@@ -127,8 +141,7 @@ app.get('/api/scrape', async (req, res) => {
         console.log ('Error', error.message)
 
 
-        //Handling errors and sending them to the frontend console
-
+        //Handling errors a
         res.status (500).json({
             success: false,
             error: 'Failed to scrape amazon due to server issues.'
@@ -137,12 +150,10 @@ app.get('/api/scrape', async (req, res) => {
 });
 
 // In case the port doesnt show up on console
-
 console.log('>>> PORT value is:', PORT);
 
+// Here we start the server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(` Try: http://localhost:${PORT}/api/scrape?keyword=laptop`);
 });
-
-``
