@@ -1,6 +1,6 @@
 # Simple Amazon Product Scraper (Bun + Express + Vite)
 
-A minimal Amazon scraper for learning:
+A minimal Amazon scraper:
 - Backend: Bun + Express + Axios + JSDOM
 - Frontend: Vite + Vanilla JS
 - Extracts: product title, rating, number of reviews, image URL
