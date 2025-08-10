@@ -77,7 +77,7 @@ This issue can also contribute with the https problem, if you are on linux just 
 ## API Endpoints
 
 - GET `/` → Basic server status text
-- GET `/health` → JSON health payload
+- GET `/health` → JSON health payload to check if the API is responding correctly
 - GET `/api/scrape?keyword=<term>` → JSON products
 
 Examples:
