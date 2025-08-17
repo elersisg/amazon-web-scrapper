@@ -31,7 +31,7 @@ cd ..
 
 ## Run locally
 
-You can run both projects at once from the root folder but I recommed doing each one individually
+You can run both projects at once from the root folder but I recommend doing each one individually
 
 ```
 # Both at once (with concurrently installed)
