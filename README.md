@@ -5,7 +5,7 @@ A minimal Amazon scraper:
 - Frontend: Vite + Vanilla JS
 - Extracts: product title, rating, number of reviews, image URL
 
-This README includes fixes for common issues that I documented on the process of testing the finnal product. 
+This README includes fixes for common issues that I documented on the process of testing the final product. 
 
 ## Prerequisites
 
